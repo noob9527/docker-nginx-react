@@ -1,65 +1,24 @@
-# docker-nginx-react
+# docker-nginx-spa
+> simply add ssl feature to [docker-nginx-react](https://github.com/zzswang/docker-nginx-react). and the original name of this repo does drive me crazy since it does nothing with react at all...
 
-## What is this
-
-A docker base image for a Single Page App (eg. React), within nginx server,
-clear url, push state friendly by default.
-
-We use the minimalist Nginx image based on Alpine linux (~6 MB).
-
-Actually it does nothing with react, no matter the app is made by React or any
-other framework.
-
-## Migrating from 0.2.0
-
-Two envrionment variable name are changed:
-
-* API_GATEWAY => APP_API_GATEWAY
-* API_PLACEHOLDER => APP_API_PLACEHOLDER
-
-For all envrionments start with APP_, it will dynamically subset while server
-starting. You can put those envrionments in html/js/css files, we will handle it
-gracefully.
-
-The above two envrionments are used by nginx, but it may also be interested with
-development. So we put APP_ prefix on them, make sure you can use them in your
-code.
-
-## Quick start
-
-There are two ways to kick off:
-
-### 1. Start the default container
-
-**note:** link your app with this volume `-v /your/webapp:/app`.
-
-```sh
-docker run -d --name myapp -p 80:80 -v /your/webapp:/app zzswang/docker-nginx-react
-```
-
-### 2. Dockfile
-
-notice: **we strongly suggest you follow this way**
-
-```sh
-FROM zzswang/docker-nginx-react:latest
-
-ENV DEBUG=off
-
-## Suppose your app is in the dist directory.
-COPY ./dist /app
-```
-
-Then just publish your images, and run the container from it.
-
-```sh
-docker run -d -p 80:80 your_image
-```
+## Features
+- [x] proxy_pass
+- [x] pushState friendly
+- [x] https: 
+  docker run commands may look like this
+  ```bash
+	docker run -d \
+		-p 443:443 \
+		-p 80:80 \
+		-v your-cert-location:/etc/ssl/certs/server.crt \
+		-v your-key-location:/etc/ssl/private/server.key \
+    your-image
+  ```
 
 ## Envrionments
-
 * APP_DIR: the root direactory of your app running in the docker container,
   usally you do not need to change it.
+* APP_HTTPS_PORT: redirect http request to specify port, `return 301 https://$host:${APP_HTTPS_PORT}$request_uri;`
 * APP_PATH_PREFIX: some times you would want to put several sites under one
   domain, then sub path prefix is required.
 * APP_API_PLACEHOLDER: An api call start with a specific path, then the server
@@ -69,7 +28,7 @@ docker run -d -p 80:80 your_image
 * CLIENT_HEADER_TIMEOUT: header timeout.
 * CLIENT_MAX_BODY_SIZE: maximum request body size.
 
-### examples
+## examples
 
 #### APP_API_PLACEHOLDER && APP_API_GATEWAY
 

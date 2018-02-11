@@ -27,7 +27,18 @@ gzip_types
     image/svg+xml;
 
 server {
-  listen 80;
+  listen 80 default_server;
+  listen [::]:80 default_server;
+  return 301 https://$host:${APP_HTTPS_PORT}$request_uri;
+}
+
+server {
+  listen 443 ssl default_server;
+  listen [::]:443 ssl default_server;
+
+  ssl_certificate /etc/ssl/certs/server.crt;
+  ssl_certificate_key /etc/ssl/private/server.key;
+
   root ${APP_DIR};
 
   # API Proxy
